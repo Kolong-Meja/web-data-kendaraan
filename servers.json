@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "Web Data Kendaraan Server",
+      "Group": "Servers",
+      "Host": "postgresql",
+      "Port": 5435,
+      "MaintenanceDB": "postgres",
+      "Username": "postgres",
+      "SSLMode": "prefer"
+    }
+  }
+}

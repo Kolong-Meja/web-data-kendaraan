@@ -1,0 +1,65 @@
+name: web-data-kendaraan
+
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: "postgresql"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: faisalrmdhn04
+      POSTGRES_DB: datakendaraan_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
+    networks:
+      - datakendaraan-networks
+
+  pgadmin:
+    image: pgadmin:latest
+    container_name: "pgadmin"
+    depends_on:
+      - postgresql
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: Faisal0809
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./db/pgadmin:/var/lib/pgadmin4/storage
+      - ./servers.json:/pgadmin4/servers.json
+    networks:
+      - datakendaraan-networks
+
+  datakendaraan-api:
+    image: datakendaraan-api:latest
+    container_name: "datakendaraan-api"
+    working_dir: /api-v1
+    ports:
+      - "8081:8080"
+    restart: no
+    depends_on:
+      - postgresql
+    networks:
+      datakendaraan-networks:
+        aliases:
+          - api
+
+  datakendaraan-frontend:
+    image: datakendaraan-frontend:latest
+    container_name: "datakendaraan-frontend"
+    working_dir: /frontend
+    ports:
+      - "80:80"
+    restart: no
+    networks:
+      datakendaraan-networks:
+        aliases:
+          - web
+
+networks:
+  datakendaraan-networks:
+    driver: bridge
