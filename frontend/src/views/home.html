@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/src/styles.css" rel="stylesheet" />
+    <title>Web Data Kendaraan | Home Page</title>
+  </head>
+  <body class="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
+    <div id="home" class="container mx-auto max-w-full">
+      <h1 class="text-gray-50 font-bold text-xl md:text-3xl">
+        Aplikasi Data Kendaraan
+      </h1>
+      <div class="flex flex-col space-y-4">
+        <div class="flex flex-row space-x-2 items-center justify-end">
+          <button
+            class="searchButton border-green-400 border-2 hover:border-green-500 hover:bg-green-500 text-green-400 hover:text-white px-3 py-1 rounded transition-colors"
+          >
+            Search
+          </button>
+          <button
+            class="createButton border-blue-400 border-2 hover:border-blue-500 hover:bg-blue-500 text-blue-400 hover:text-white px-3 py-1 rounded transition-colors"
+          >
+            Create
+          </button>
+        </div>
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+          <table class="w-full text-base text-left text-gray-500 table-auto">
+            <thead
+              class="text-base text-gray-900 font-bold uppercase bg-gray-200"
+            >
+              <tr id="table-header"></tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200 bg-gray-50" id="table-body">
+              <tr id="table-row" class=""></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Model -->
+    <div
+      div
+      class="modal micromodal-slide fixed inset-0 z-50"
+      id="modal-create"
+      aria-hidden="true"
+    >
+      <div
+        class="modal__overlay fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+        tabindex="-1"
+        data-micromodal-close
+      >
+        <div
+          class="modal__container bg-white rounded-lg max-w-lg w-full overflow-y-auto shadow-lg max-h-[90vh] mx-auto my-8 p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-create-title"
+        >
+          <header class="flex justify-between items-center pb-3 border-b">
+            <h2
+              class="text-xl uppercase font-semibold text-gray-900"
+              id="modal-create-title"
+            >
+              Create New Vehicle
+            </h2>
+            <button
+              class="text-gray-400 hover:text-gray-600"
+              aria-label="Close modal"
+              data-micromodal-close
+            >
+              &times;
+            </button>
+          </header>
+          <main class="mt-4" id="modal-create-content">
+            <form id="create-form" class="space-y-4">
+              <input
+                name="nrk"
+                type="text"
+                required
+                placeholder="Nomor Registrasi Kendaraan"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="namaPemilik"
+                type="text"
+                required
+                placeholder="Nama Pemilik"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="alamat"
+                type="text"
+                required
+                placeholder="Alamat"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="merkKendaraan"
+                type="text"
+                required
+                placeholder="Merk Kendaraan"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="tahunPembuatan"
+                type="number"
+                required
+                placeholder="Tahun Pembuatan"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="kapSilinder"
+                type="number"
+                required
+                placeholder="Kapasitas Silinder"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <select
+                name="warnaKendaraan"
+                required
+                class="w-full border border-gray-300 bg-white text-gray-900 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option disabled selected value="">
+                  Pilih Warna Kendaraan
+                </option>
+                <option value="Merah">Merah</option>
+                <option value="Hitam">Hitam</option>
+                <option value="Biru">Biru</option>
+                <option value="Abu-Abu">Abu-Abu</option>
+              </select>
+              <input
+                name="bahanBakar"
+                type="text"
+                required
+                placeholder="Bahan Bakar"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+
+              <div class="flex justify-end space-x-2 pt-4 border-t">
+                <button
+                  type="button"
+                  data-micromodal-close
+                  class="border-gray-400 hover:border-gray-500 text-gray-400 hover:text-white border-2 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-300 ease-in-out"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="border-green-500 hover:border-green-600 border-2 text-green-500 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg transition-colors duration-300 ease-in-out"
+                >
+                  Create
+                </button>
+              </div>
+            </form>
+          </main>
+        </div>
+      </div>
+    </div>
+    <!-- End of Create Modal -->
+
+    <!-- View/Detail Modal -->
+    <div
+      class="modal micromodal-slide fixed inset-0 z-50"
+      id="modal-view"
+      aria-hidden="true"
+    >
+      <div
+        class="modal__overlay fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-in-out"
+        tabindex="-1"
+        data-micromodal-close
+      >
+        <div
+          class="modal__container bg-white rounded-lg max-w-lg w-full overflow-y-auto shadow-lg max-h-[90vh] mx-auto my-8 p-6 transform transition-transform duration-300 ease-in-out"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-view-title"
+        >
+          <header class="flex justify-between items-center pb-3 border-b">
+            <h2
+              class="text-xl uppercase font-semibold text-gray-900"
+              id="modal-view-title"
+            >
+              Vehicle Details
+            </h2>
+            <button
+              class="text-gray-400 hover:text-gray-600"
+              aria-label="Close modal"
+              data-micromodal-close
+            >
+              &times;
+            </button>
+          </header>
+
+          <main class="mt-4 text-gray-700" id="modal-view-content">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <p class="text-xs font-medium uppercase text-gray-500">
+                  Nomor Registrasi Kendaraan
+                </p>
+                <p
+                  id="view-nrk"
+                  class="mt-1 text-base font-semibold text-gray-900"
+                ></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase text-gray-500">
+                  Nama Pemilik
+                </p>
+                <p
+                  id="view-namaPemilik"
+                  class="mt-1 text-base font-semibold text-gray-900"
+                ></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase text-gray-500">
+                  Alamat
+                </p>
+                <p
+                  id="view-alamat"
+                  class="mt-1 text-base font-semibold text-gray-900"
+                ></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase text-gray-500">
+                  Merk Kendaraan
+                </p>
+                <p
+                  id="view-merkKendaraan"
+                  class="mt-1 text-base font-semibold text-gray-900"
+                ></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase text-gray-500">
+                  Tahun Pembuatan
+                </p>
+                <p
+                  id="view-tahunPembuatan"
+                  class="mt-1 text-base font-semibold text-gray-900"
+                ></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase text-gray-500">
+                  Kapasitas Silinder
+                </p>
+                <p
+                  id="view-kapSilinder"
+                  class="mt-1 text-base font-semibold text-gray-900"
+                ></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase text-gray-500">
+                  Warna Kendaraan
+                </p>
+                <p
+                  id="view-warnaKendaraan"
+                  class="mt-1 text-base font-semibold text-gray-900"
+                ></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium uppercase text-gray-500">
+                  Bahan Bakar
+                </p>
+                <p
+                  id="view-bahanBakar"
+                  class="mt-1 text-base font-semibold text-gray-900"
+                ></p>
+              </div>
+            </div>
+          </main>
+
+          <footer class="mt-6 flex justify-end">
+            <button
+              type="button"
+              data-micromodal-close
+              class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg transition-colors duration-300 ease-in-out"
+            >
+              Close
+            </button>
+          </footer>
+        </div>
+      </div>
+    </div>
+    <!-- End of View/Detail Modal -->
+
+    <!-- Edit Modal -->
+    <div
+      class="modal micromodal-slide fixed inset-0 z-50"
+      id="modal-edit"
+      aria-hidden="true"
+    >
+      <div
+        class="modal__overlay fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300"
+        tabindex="-1"
+        data-micromodal-close
+      >
+        <div
+          class="modal__container bg-white rounded-lg max-w-lg w-full overflow-y-auto shadow-lg max-h-[90vh] mx-auto my-8 p-6 transform transition-transform duration-300 ease-in-out"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-edit-title"
+        >
+          <header class="flex justify-between items-center pb-3 border-b">
+            <h2
+              class="text-xl uppercase font-semibold text-gray-900"
+              id="modal-edit-title"
+            >
+              Edit Vehicle
+            </h2>
+            <button
+              class="text-gray-400 hover:text-gray-600"
+              aria-label="Close modal"
+              data-micromodal-close
+            >
+              &times;
+            </button>
+          </header>
+
+          <main class="mt-4" id="modal-edit-content">
+            <form id="edit-form" class="space-y-4">
+              <input
+                name="nrk"
+                type="text"
+                required
+                readonly
+                class="w-full bg-gray-100 border text-gray-700 border-gray-300 rounded px-3 py-2"
+              />
+
+              <input
+                name="namaPemilik"
+                type="text"
+                required
+                placeholder="Nama Pemilik"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="alamat"
+                type="text"
+                required
+                placeholder="Alamat"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="merkKendaraan"
+                type="text"
+                required
+                placeholder="Merk Kendaraan"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="tahunPembuatan"
+                type="number"
+                required
+                placeholder="Tahun Pembuatan"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                name="kapSilinder"
+                type="number"
+                required
+                placeholder="Kapasitas Silinder"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <select
+                name="warnaKendaraan"
+                required
+                class="w-full border border-gray-300 bg-white text-gray-900 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option disabled value="">Pilih Warna Kendaraan</option>
+                <option value="Merah">Merah</option>
+                <option value="Hitam">Hitam</option>
+                <option value="Biru">Biru</option>
+                <option value="Abu-Abu">Abu-Abu</option>
+              </select>
+              <input
+                name="bahanBakar"
+                type="text"
+                required
+                placeholder="Bahan Bakar"
+                class="w-full border placeholder-gray-400 text-gray-900 border-gray-300 rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+
+              <div class="flex justify-end space-x-2 pt-4 border-t">
+                <button
+                  type="button"
+                  data-micromodal-close
+                  class="border-gray-400 hover:border-gray-500 text-gray-400 hover:text-white border-2 hover:bg-gray-500 px-4 py-2 rounded-lg transition-colors duration-300 ease-in-out"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  class="border-green-500 hover:border-green-600 border-2 text-green-500 hover:text-white hover:bg-green-600 px-4 py-2 rounded-lg transition-colors duration-300 ease-in-out"
+                >
+                  Update
+                </button>
+              </div>
+            </form>
+          </main>
+        </div>
+      </div>
+    </div>
+    <!-- End of Edit Modal -->
+
+    <!-- Delete Modal -->
+    <div
+      class="modal micromodal-slide fixed inset-0 z-50"
+      id="modal-delete"
+      aria-hidden="true"
+    >
+      <div
+        class="modal__overlay fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-in-out"
+        tabindex="-1"
+        data-micromodal-close
+      >
+        <div
+          class="modal__container bg-white rounded-lg max-w-md w-full mx-auto my-8 p-6 max-h-[80vh] overflow-y-auto transform transition-transform duration-300 ease-in-out"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-delete-title"
+        >
+          <header class="flex justify-between items-center pb-3 border-b">
+            <h2
+              class="text-xl uppercase font-semibold text-gray-900"
+              id="modal-delete-title"
+            >
+              Delete Vehicle
+            </h2>
+            <button
+              class="text-gray-400 hover:text-gray-600"
+              aria-label="Close modal"
+              data-micromodal-close
+            >
+              &times;
+            </button>
+          </header>
+
+          <main class="mt-4 text-gray-700" id="modal-delete-content">
+            Are you sure you want to delete vehicle
+            <span
+              id="delete-item-nrk"
+              class="font-semibold text-gray-900"
+            ></span
+            >? This action cannot be undone.
+          </main>
+
+          <footer class="mt-6 flex justify-end space-x-2">
+            <button
+              type="button"
+              data-micromodal-close
+              class="border-gray-400 hover:border-gray-500 border-2 hover:bg-gray-500 text-gray-400 hover:text-white px-4 py-2 transition-colors duration-300 ease-in-out rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              id="confirm-delete-button"
+              class="border-red-400 hover:border-red-500 border-2 hover:bg-red-500 text-red-400 hover:text-white px-4 py-2 transition-colors duration-300 ease-in-out rounded-lg"
+            >
+              Delete
+            </button>
+          </footer>
+        </div>
+      </div>
+    </div>
+    <!-- End of Delete Modal -->
+  </body>
+</html>
