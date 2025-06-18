@@ -8,22 +8,72 @@
   </head>
   <body class="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
     <div id="home" class="container mx-auto max-w-full">
-      <h1 class="text-gray-50 font-bold text-xl md:text-3xl">
+      <h1 class="text-gray-50 font-bold text-xl md:text-2xl mb-8">
         Aplikasi Data Kendaraan
       </h1>
       <div class="flex flex-col space-y-4">
         <div class="flex flex-row space-x-2 items-center justify-end">
-          <button
-            class="searchButton border-green-400 border-2 hover:border-green-500 hover:bg-green-500 text-green-400 hover:text-white px-3 py-1 rounded transition-colors"
-          >
-            Search
-          </button>
+          <div class="search-container flex items-center">
+            <label
+              for="search-input"
+              class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-gray-300"
+              >Search</label
+            >
+            <div class="relative">
+              <div
+                class="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none"
+              >
+                <svg
+                  class="w-5 h-5 text-gray-500 dark:text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+              </div>
+              <input
+                type="text"
+                id="search-input"
+                placeholder="Search nomor registrasi kendaraan, nama pemilik, merk kendaraan..."
+                class="block px-4 py-1 pl-10 w-full text-base text-gray-900 bg-gray-50 rounded-lg border-2 border-gray-300 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-300 ease-in-out"
+              />
+
+              <!-- <button
+                type="button"
+                id="clear-search-button"
+                class="clearButton bg-gray-200 text-gray-600 px-2 py-1 rounded-r-lg hover:bg-gray-300 transition-colors duration-300 ease-in-out"
+                style="display: none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-x-lg h-full w-full"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"
+                  />
+                </svg>
+              </button> -->
+            </div>
+          </div>
           <button
             class="createButton border-blue-400 border-2 hover:border-blue-500 hover:bg-blue-500 text-blue-400 hover:text-white px-3 py-1 rounded transition-colors"
           >
             Create
           </button>
         </div>
+
+        <!-- Table -->
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
           <table class="w-full text-base text-left text-gray-500 table-auto">
             <thead
@@ -36,6 +86,7 @@
             </tbody>
           </table>
         </div>
+        <!-- End of Table -->
       </div>
     </div>
 
@@ -127,7 +178,7 @@
                 <option value="Merah">Merah</option>
                 <option value="Hitam">Hitam</option>
                 <option value="Biru">Biru</option>
-                <option value="Abu-Abu">Abu-Abu</option>
+                <option value="Putih">Putih</option>
               </select>
               <input
                 name="bahanBakar"
@@ -370,7 +421,7 @@
                 <option value="Merah">Merah</option>
                 <option value="Hitam">Hitam</option>
                 <option value="Biru">Biru</option>
-                <option value="Abu-Abu">Abu-Abu</option>
+                <option value="Putih">Putih</option>
               </select>
               <input
                 name="bahanBakar"

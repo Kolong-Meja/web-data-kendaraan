@@ -25,57 +25,67 @@ MicroModal.init({
 let _targetDeleteNrk = null;
 let _targetUpdateNrk = null;
 let _targetViewNrk = null;
+let currentQuery = "";
+let searchTimeout = null;
 
-/**
- * Render vehicle table interface.
- *
- * @returns {Promise<void>}
- */
-async function displayVehiclesData() {
-  const response = await fetchVehiclesData();
-  const data = response.resource || [];
+const tableBodyElement = document.querySelector("#table-body");
+const tableHeaderElement = document.querySelector("#table-header");
+const searchInput = document.getElementById("search-input");
+const createButton = document.querySelector(".createButton");
+const createForm = document.querySelector("#create-form");
+const editForm = document.querySelector("#edit-form");
+const confirmDeleteButton = document.querySelector("#confirm-delete-button");
+// const clearSearchButton = document.getElementById("clear-search-button");
 
-  const containerElement = document.querySelector("#home");
-  if (!containerElement) {
-    console.error("#home element not found.");
-    return;
-  }
+function renderTableHeader() {
+  if (!tableHeaderElement) return;
+  tableHeaderElement.innerHTML = _defaultTableHeaders
+    .map(
+      (h) =>
+        `<th class="px-2 sm:px-4 py-4 text-center text-xs sm:text-sm font-medium text-gray-600 uppercase whitespace-nowrap tracking-wider">
+                ${h === "actions" ? "Actions" : h}
+              </th>`
+    )
+    .join("");
+}
 
-  const tableHeaderElement = document.querySelector("#table-header");
-  if (!tableHeaderElement) {
-    console.error("#table-header element not found.");
-    return;
-  }
-
-  const tableBodyElement = document.querySelector("#table-body");
+async function generateSearch(query) {
   if (!tableBodyElement) {
     console.error("#table-body element not found.");
     return;
   }
 
-  tableHeaderElement.innerHTML = `
-     ${_defaultTableHeaders
-       .map(
-         (h) =>
-           `<th class="px-2 sm:px-4 py-4 text-center text-xs sm:text-sm font-medium text-gray-600 uppercase whitespace-nowrap tracking-wider">
-                ${h === "actions" ? "Actions" : h}
-              </th>`
-       )
-       .join("")}
-  `;
+  tableBodyElement.innerHTML = `
+        <tr>
+          <td colspan="9" class="text-center py-4">Loading...</td>
+        </tr>`;
 
-  data.forEach((item, index) => {
-    const tableRowElement = document.createElement("tr");
-    tableRowElement.classList.add(
-      "hover:bg-gray-100",
-      "odd:bg-white",
-      "even:bg-gray-50",
-      "transition-colors",
-      "duration-300",
-      "ease-in-out"
-    );
+  try {
+    const response = await fetchVehiclesData(query);
+    const data = response.resource || [];
 
-    tableRowElement.innerHTML = `
+    tableBodyElement.innerHTML = "";
+
+    if (data.length === 0) {
+      tableBodyElement.innerHTML = `
+          <tr>
+            <td colspan="9" class="text-center py-4">No vehicles found</td>
+          </tr>`;
+      return;
+    }
+
+    data.forEach((item, index) => {
+      const tableRowElement = document.createElement("tr");
+      tableRowElement.classList.add(
+        "hover:bg-gray-100",
+        "odd:bg-white",
+        "even:bg-gray-50",
+        "transition-colors",
+        "duration-300",
+        "ease-in-out"
+      );
+
+      tableRowElement.innerHTML = `
       <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">${index + 1}</td>
       <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">${item.nrk}</td>
       <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-900">${item.namaPemilik}</td>
@@ -90,94 +100,114 @@ async function displayVehiclesData() {
         <button data-nrk="${item.nrk}" class="deleteButton border-red-400 border-2 hover:bg-red-500 hover:border-red-500 text-red-400 hover:text-gray-50 px-2 py-1 rounded transition-colors duration-300 ease-in-out">Delete</button>
       </td>
     `;
+      addRowListeners(tableRowElement, item);
 
-    tableRowElement
-      .querySelector(".viewButton")
-      ?.addEventListener("click", () => {
-        console.log("View button called: ", item.nrk);
+      tableBodyElement.appendChild(tableRowElement);
+    });
+  } catch (error) {
+    console.error("Error searching vehicles:", error);
 
-        _targetViewNrk = item.nrk;
+    tableBodyElement.innerHTML = `
+      <tr><td colspan="9" class="text-center py-4 text-red-500">
+        Error loading data: ${error.message}
+      </td></tr>`;
+  }
+}
 
-        fetchVehicleData(_targetViewNrk)
-          .then((res) => {
-            const item = res.resource;
+function debounceSearch(query) {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    generateSearch(query);
+  }, 800);
+}
 
-            document.getElementById("view-nrk").innerText = item.nrk;
-            document.getElementById("view-namaPemilik").innerText =
-              item.namaPemilik;
-            document.getElementById("view-alamat").innerText = item.alamat;
-            document.getElementById("view-merkKendaraan").innerText =
-              item.merkKendaraan;
-            document.getElementById("view-tahunPembuatan").innerText =
-              item.tahunPembuatan;
-            document.getElementById("view-kapSilinder").innerText =
-              item.kapSilinder + " cc";
-            document.getElementById("view-warnaKendaraan").innerText =
-              item.warnaKendaraan;
-            document.getElementById("view-bahanBakar").innerText =
-              item.bahanBakar;
+// function toggleClearButton(query) {
+//   clearSearchButton.style.display = query.trim() ? "block" : "none";
+// }
 
-            MicroModal.show("modal-view");
-          })
-          .catch(console.error);
-      });
+function addRowListeners(tableRow, item) {
+  tableRow.querySelector(".viewButton").addEventListener("click", () => {
+    console.log("View button called: ", item.nrk);
 
-    tableRowElement
-      .querySelector(".editButton")
-      ?.addEventListener("click", () => {
-        console.log("Edit button called: ", item.nrk);
+    _targetViewNrk = item.nrk;
 
-        _targetUpdateNrk = item.nrk;
+    fetchVehicleData(_targetViewNrk)
+      .then((res) => {
+        const item = res.resource;
 
-        fetchVehiclesData()
-          .then((res) => {
-            const item = res.resource.find((v) => v.nrk === _targetUpdateNrk);
-            if (!item) return;
+        document.getElementById("view-nrk").innerText = item.nrk;
+        document.getElementById("view-namaPemilik").innerText =
+          item.namaPemilik;
+        document.getElementById("view-alamat").innerText = item.alamat;
+        document.getElementById("view-merkKendaraan").innerText =
+          item.merkKendaraan;
+        document.getElementById("view-tahunPembuatan").innerText =
+          item.tahunPembuatan;
+        document.getElementById("view-kapSilinder").innerText =
+          item.kapSilinder + " cc";
+        document.getElementById("view-warnaKendaraan").innerText =
+          item.warnaKendaraan;
+        document.getElementById("view-bahanBakar").innerText = item.bahanBakar;
 
-            const form = document.getElementById("edit-form");
-            form.nrk.value = item.nrk;
-            form.namaPemilik.value = item.namaPemilik;
-            form.alamat.value = item.alamat;
-            form.merkKendaraan.value = item.merkKendaraan;
-            form.tahunPembuatan.value = item.tahunPembuatan;
-            form.kapSilinder.value = item.kapSilinder;
-            form.warnaKendaraan.value = item.warnaKendaraan;
-            form.bahanBakar.value = item.bahanBakar;
+        MicroModal.show("modal-view");
+      })
+      .catch(console.error);
+  });
 
-            MicroModal.show("modal-edit");
-          })
-          .catch(console.error);
-      });
+  tableRow.querySelector(".editButton").addEventListener("click", () => {
+    console.log("Edit button called: ", item.nrk);
 
-    tableRowElement
-      .querySelector(".deleteButton")
-      ?.addEventListener("click", () => {
-        console.log("Delete button called: ", item.nrk);
+    _targetUpdateNrk = item.nrk;
 
-        _targetDeleteNrk = item.nrk;
+    fetchVehiclesData()
+      .then((res) => {
+        const item = res.resource.find((v) => v.nrk === _targetUpdateNrk);
+        if (!item) return;
 
-        document.getElementById("delete-item-nrk").innerHTML = _targetDeleteNrk;
-        MicroModal.show("modal-delete");
-      });
+        const form = document.getElementById("edit-form");
+        form.nrk.value = item.nrk;
+        form.namaPemilik.value = item.namaPemilik;
+        form.alamat.value = item.alamat;
+        form.merkKendaraan.value = item.merkKendaraan;
+        form.tahunPembuatan.value = item.tahunPembuatan;
+        form.kapSilinder.value = item.kapSilinder;
+        form.warnaKendaraan.value = item.warnaKendaraan;
+        form.bahanBakar.value = item.bahanBakar;
 
-    tableBodyElement.appendChild(tableRowElement);
+        MicroModal.show("modal-edit");
+      })
+      .catch(console.error);
+  });
+
+  tableRow.querySelector(".deleteButton").addEventListener("click", () => {
+    console.log("Delete button called: ", item.nrk);
+
+    _targetDeleteNrk = item.nrk;
+
+    document.getElementById("delete-item-nrk").innerHTML = _targetDeleteNrk;
+    MicroModal.show("modal-delete");
   });
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await displayVehiclesData();
-
-  // create data.
-  const createButton = document.querySelector(".createButton");
-  createButton?.addEventListener("click", () => {
-    MicroModal.show("modal-create");
+function setupAllEventListeners() {
+  searchInput?.addEventListener("input", (event) => {
+    // toggleClearButton(query);
+    debounceSearch(event.target.value);
   });
 
-  const form = document.querySelector("#create-form");
-  form?.addEventListener("submit", async (event) => {
+  // clearSearchButton.addEventListener("click", () => {
+  //   searchInput.value = "";
+  //   toggleClearButton("");
+  //   generateSearch("");
+  // });
+
+  createButton?.addEventListener("click", () =>
+    MicroModal.show("modal-create")
+  );
+  createForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const formData = new FormData(form);
+    const formData = new FormData(createForm);
     const payload = {
       nrk: formData.get("nrk"),
       namaPemilik: formData.get("namaPemilik"),
@@ -194,19 +224,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       MicroModal.close("modal-create");
 
-      form.reset();
+      createForm.reset();
 
-      await fetchVehiclesData();
+      await generateSearch(currentQuery);
     } catch (error) {
       console.error("Create vehicle failed ❌: ", error);
     }
   });
 
-  // update data.
-  const editForm = document.querySelector("#edit-form");
   editForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (_targetUpdateNrk) return;
+    if (!_targetUpdateNrk) return;
 
     const formData = new FormData(editForm);
     const payload = {
@@ -225,25 +253,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       MicroModal.close("modal-edit");
 
-      form.reset();
+      _targetUpdateNrk = null;
 
-      await fetchVehiclesData();
+      await generateSearch(currentQuery);
     } catch (err) {
       console.error("Update vehicle failed ❌:", err);
     }
   });
-});
 
-document
-  .getElementById("confirm-delete-button")
-  ?.addEventListener("click", async () => {
+  confirmDeleteButton?.addEventListener("click", async () => {
     if (!_targetDeleteNrk) return;
     try {
       await deleteVehicleData(_targetDeleteNrk);
+
       MicroModal.close("modal-delete");
 
-      await fetchVehiclesData();
+      _targetDeleteNrk = null;
+
+      await generateSearch(currentQuery);
     } catch (err) {
       console.error("Delete vehicle failed ❌: ", err);
     }
   });
+}
+
+renderTableHeader();
+setupAllEventListeners();
+generateSearch("");

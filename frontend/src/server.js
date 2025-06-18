@@ -3,12 +3,16 @@ import ky from "ky";
 /**
  *  Fetching all vehicles data.
  *
+ * @param {string} query - Querying data like nrk, nama pemilik, and merk kendaraan.
+ *
  * @returns {Promise<any>} return JSON response.
  */
-export async function fetchVehiclesData() {
+export async function fetchVehiclesData(query = "") {
   try {
     const response = await ky
-      .get(`${import.meta.env.VITE_API_URL}/api/v1/vehicles`)
+      .get(
+        `${import.meta.env.VITE_API_URL}/api/v1/vehicles?q=${encodeURIComponent(query)}`
+      )
       .json();
     return response;
   } catch (error) {

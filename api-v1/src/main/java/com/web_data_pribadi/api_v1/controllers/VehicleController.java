@@ -23,8 +23,9 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/vehicles")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials = "true", methods = {
-    RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE })
+@CrossOrigin(origins = { "http://localhost:3000",
+    "http://127.0.0.1:3000" }, allowedHeaders = "*", allowCredentials = "true", methods = {
+        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.DELETE })
 public class VehicleController {
   private final IVehicle iVehicle;
 
