@@ -3,6 +3,8 @@ package com.web_data_pribadi.api_v1.repositories;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,6 +19,7 @@ import com.web_data_pribadi.api_v1.exceptions.ResourceNotFoundException;
 import com.web_data_pribadi.api_v1.interfaces.IVehicle;
 import com.web_data_pribadi.api_v1.models.Vehicle;
 import com.web_data_pribadi.api_v1.payloads.requests.CreateVehicleRequest;
+import com.web_data_pribadi.api_v1.payloads.requests.SearchRequest;
 import com.web_data_pribadi.api_v1.payloads.requests.UpdateVehicleRequest;
 import com.web_data_pribadi.api_v1.payloads.responses.ApiResponse;
 
@@ -28,6 +31,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
@@ -40,22 +44,51 @@ public class VehicleRepository implements IVehicle {
     this.entityManager = entityManager;
   }
 
+  private final void searchRequestPredicate(
+      SearchRequest request,
+      List<Predicate> targetPredicates,
+      CriteriaBuilder targetCriteriaBuilder,
+      Root<Vehicle> targetRoot,
+      List<String> fields) {
+    String queryLower = "%" + request.query().toLowerCase() + "%";
+
+    var likePredicates = fields.stream()
+        .map(field -> targetCriteriaBuilder.like(targetCriteriaBuilder.lower(targetRoot.get(field)), queryLower))
+        .toList();
+
+    if (!likePredicates.isEmpty()) {
+      targetPredicates.add(targetCriteriaBuilder.or(likePredicates.toArray(Predicate[]::new)));
+    }
+  }
+
   @Override
-  public ResponseEntity<ApiResponse> findAll() {
+  public ResponseEntity<ApiResponse> findAll(SearchRequest searchRequest) {
     try {
       CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
       CriteriaQuery<Tuple> selectQuery = criteriaBuilder.createQuery(Tuple.class);
-      Root<Vehicle> baseSelectRoot = selectQuery.from(Vehicle.class);
+      List<Predicate> predicates = new ArrayList<>();
+      Root<Vehicle> baseRoot = selectQuery.from(Vehicle.class);
+
+      /**
+       * CASE WHEN LIKE QUERY USED.
+       */
+      searchRequestPredicate(
+          searchRequest,
+          predicates,
+          criteriaBuilder,
+          baseRoot,
+          Arrays.asList("nrk", "namaPemilik", "merkKendaraan"));
 
       selectQuery.multiselect(
-          baseSelectRoot.get("nrk").alias("nrk"),
-          baseSelectRoot.get("namaPemilik").alias("namaPemilik"),
-          baseSelectRoot.get("alamat").alias("alamat"),
-          baseSelectRoot.get("merkKendaraan").alias("merkKendaraan"),
-          baseSelectRoot.get("tahunPembuatan").alias("tahunPembuatan"),
-          baseSelectRoot.get("kapSilinder").alias("kapSilinder"),
-          baseSelectRoot.get("warnaKendaraan").alias("warnaKendaraan"),
-          baseSelectRoot.get("bahanBakar").alias("bahanBakar")).distinct(true);
+          baseRoot.get("nrk").alias("nrk"),
+          baseRoot.get("namaPemilik").alias("namaPemilik"),
+          baseRoot.get("alamat").alias("alamat"),
+          baseRoot.get("merkKendaraan").alias("merkKendaraan"),
+          baseRoot.get("tahunPembuatan").alias("tahunPembuatan"),
+          baseRoot.get("kapSilinder").alias("kapSilinder"),
+          baseRoot.get("warnaKendaraan").alias("warnaKendaraan"),
+          baseRoot.get("bahanBakar").alias("bahanBakar")).distinct(true)
+          .where(criteriaBuilder.and(predicates.toArray(Predicate[]::new)));
 
       TypedQuery<Tuple> typedQuery = entityManager.createQuery(selectQuery);
 

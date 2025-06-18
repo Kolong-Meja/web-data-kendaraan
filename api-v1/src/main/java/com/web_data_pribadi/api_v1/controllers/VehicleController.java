@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.web_data_pribadi.api_v1.interfaces.IVehicle;
 import com.web_data_pribadi.api_v1.payloads.requests.CreateVehicleRequest;
+import com.web_data_pribadi.api_v1.payloads.requests.SearchRequest;
 import com.web_data_pribadi.api_v1.payloads.requests.UpdateVehicleRequest;
 import com.web_data_pribadi.api_v1.payloads.responses.ApiResponse;
 
@@ -31,8 +33,9 @@ public class VehicleController {
   }
 
   @GetMapping
-  public ResponseEntity<ApiResponse> findAll() {
-    return iVehicle.findAll();
+  public ResponseEntity<ApiResponse> findAll(
+      @RequestParam(value = "q", required = false, defaultValue = "") SearchRequest searchRequest) {
+    return iVehicle.findAll(searchRequest);
   }
 
   @GetMapping("/{nrk}")

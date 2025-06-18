@@ -1,5 +1,6 @@
 package com.web_data_pribadi.api_v1.controllers;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web_data_pribadi.api_v1.dtos.VehicleDTO;
 import com.web_data_pribadi.api_v1.interfaces.IVehicle;
+import com.web_data_pribadi.api_v1.payloads.requests.SearchRequest;
 import com.web_data_pribadi.api_v1.payloads.responses.ApiResponse;
 
 @WebMvcTest(VehicleController.class)
@@ -54,6 +56,8 @@ public class VehicleControllerTest {
 
   @Test
   void testFindAll() throws Exception {
+    SearchRequest searchRequest = new SearchRequest("test");
+
     VehicleDTO vehicle1 = new VehicleDTO("B-1234-XY", "John Doe", "Jakarta", "Honda", 2020, 150, "Black", "Bensin");
     VehicleDTO vehicle2 = new VehicleDTO("B-5678-AB", "Jane Smith", "Bandung", "Yamaha", 2019, 125, "Red", "Bensin");
 
@@ -64,9 +68,9 @@ public class VehicleControllerTest {
         timestamp,
         Arrays.asList(vehicle1, vehicle2));
 
-    when(iVehicle.findAll()).thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
+    when(iVehicle.findAll(any(SearchRequest.class))).thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
 
-    mockMvc.perform(get("/v1/vehicles"))
+    mockMvc.perform(get("/v1/vehicles").param("query", "test"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.status").value(HttpStatus.OK.value()))
         .andExpect(jsonPath("$.success").value(true))
@@ -75,6 +79,6 @@ public class VehicleControllerTest {
         .andExpect(jsonPath("$.data[0].nrk").value("B-1234-XY"))
         .andExpect(jsonPath("$.data[1].nrk").value("B-5678-AB"));
 
-    verify(iVehicle, times(1)).findAll();
+    verify(iVehicle, times(1)).findAll(any(SearchRequest.class));
   }
 }
