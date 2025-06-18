@@ -3,8 +3,8 @@
     "1": {
       "Name": "Web Data Kendaraan Server",
       "Group": "Servers",
-      "Host": "postgresql",
-      "Port": 5435,
+      "Host": "172.18.0.1",
+      "Port": 5436,
       "MaintenanceDB": "postgres",
       "Username": "postgres",
       "SSLMode": "prefer"
