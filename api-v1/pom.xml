@@ -9,7 +9,7 @@
     <version>3.5.0</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
-  <groupId>com.web-data-pribadi</groupId>
+  <groupId>com.web-data-kendaraan</groupId>
   <artifactId>api-v1</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>api-v1</name>
